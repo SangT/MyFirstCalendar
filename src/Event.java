@@ -3,13 +3,39 @@ import java.time.LocalDate;
 /**
  * Created by SangTo on 8/28/18.
  */
-public class Event {
+public class Event implements Comparable<Event> {
     //represent an event.
     // An event consists of its name and a TimeInterval of the event.
     private String name;
+    private LocalDate date;
+    private TimeInterval time;
 
-    public void addEvent() {
-
+    public Event(String name, LocalDate date, TimeInterval time) {
+        this.name = name;
+        this.date = date;
+        this.time = time;
     }
 
+    /**
+     * @return the name of the event.
+     */
+    public String getName() {
+        return name;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public TimeInterval getTime() {
+        return time;
+    }
+
+    @Override
+    public int compareTo(Event o) {
+        return time.compareTo(o.time);
+        // returns -1 if this is smaller than o
+        // return 0 if equal
+        // returns 1 if we are greater than o
+    }
 }
