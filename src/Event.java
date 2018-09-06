@@ -1,3 +1,4 @@
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 /**
@@ -8,11 +9,18 @@ public class Event implements Comparable<Event> {
     // An event consists of its name and a TimeInterval of the event.
     private String name;
     private LocalDate date;
+    private DayOfWeek date1;
     private TimeInterval time;
 
     public Event(String name, LocalDate date, TimeInterval time) {
         this.name = name;
         this.date = date;
+        this.time = time;
+    }
+
+    public Event(String name, DayOfWeek date, TimeInterval time) {
+        this.name = name;
+        this.date1 = date;
         this.time = time;
     }
 
