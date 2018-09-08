@@ -1,4 +1,6 @@
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -9,9 +11,11 @@ public class MyCalendar {
     //private List<Event> event = new ArrayList<>();
 
     private final Map<LocalDate, TreeSet<Event>> eventsOrder = new HashMap<>();
+    private final Map<DayOfWeek, TreeSet<Event>> multipleEvents = new HashMap<>();
 
     public void add(Event e) {
         LocalDate eventDay = e.getDate();
+        DayOfWeek multiday = e.getDate().getDayOfWeek(); // need to 
         if (!eventsOrder.containsKey(eventDay)) {
             TreeSet<Event> events = new TreeSet<>();
             eventsOrder.put(eventDay, events);
