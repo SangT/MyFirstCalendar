@@ -9,7 +9,7 @@ public class Event implements Comparable<Event> {
     // An event consists of its name and a TimeInterval of the event.
     private String name;
     private LocalDate date;
-    private DayOfWeek date1;
+//    private DayOfWeek date1;
     private TimeInterval time;
 
     public Event(String name, LocalDate date, TimeInterval time) {
@@ -18,11 +18,11 @@ public class Event implements Comparable<Event> {
         this.time = time;
     }
 
-    public Event(String name, DayOfWeek date, TimeInterval time) {
-        this.name = name;
-        this.date1 = date;
-        this.time = time;
-    }
+//    public Event(String name, DayOfWeek date, TimeInterval time) {
+//        this.name = name;
+//        this.date1 = date;
+//        this.time = time;
+//    }
 
     /**
      * @return the name of the event.
