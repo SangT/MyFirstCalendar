@@ -7,6 +7,7 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Scanner;
@@ -23,7 +24,7 @@ public class MyCalendarTester {
     static Scanner sc = new Scanner(System.in);
 
     static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yy");
-//    static final DateTimeFormatter multipleDays = DateTimeFormatter.ofPattern("EEE");
+    static final DateTimeFormatter fullYearFormatter = DateTimeFormatter.ofPattern("M/d/y");
 
     public static void main(String[] args) throws FileNotFoundException{
         printCalendar(cal);
@@ -31,7 +32,6 @@ public class MyCalendarTester {
 
         // After the function of an option is done
         // the main menu is displayed again for the user to choose the next option.
-
         boolean check = true;
         while (check) {
             printMenu();
@@ -75,6 +75,7 @@ public class MyCalendarTester {
         // get value of the dayOfWeek of the firstDay
         int order = firstDay.getDayOfWeek().getValue();
         // print the calendar
+
         for (int j = 0; j < order; j++) {
             System.out.print("\t");
         }
@@ -82,10 +83,21 @@ public class MyCalendarTester {
             if ((i + order - 1)%7 == 0) {
                 System.out.println();
             }
+            /*
+            case 1: today is the iterated day and you have events on this day   ==> [{day}]
+            case 2: today is the iterated day                                   ==> [day]
+            case 3: you have events on this day                                 ==> {day}
+            case 4: base case                                                   ==> day
+            */
 
-            if (i == cal.getDayOfMonth() && month == cal.getMonth()) {
-                    System.out.print("[" + i + "]" + "  ");
-            } else {
+            LocalDate iteratedDay = LocalDate.of(a.getYear(), month, i);
+            if (i == cal.getDayOfMonth() && month == cal.getMonth() && myCal.hasEvent(iteratedDay)) {
+                System.out.print("[{" + i + "}] ");
+            } else if (i == cal.getDayOfMonth() && month == cal.getMonth()) { // case 2
+                System.out.print("[" + i + "]  ");
+            } else if (myCal.hasEvent(iteratedDay)) {
+                System.out.print("{" + i + "} ");
+            }else{
                 if (i < 10)
                     System.out.print(" " + i + "  ");
                 else
@@ -156,7 +168,6 @@ public class MyCalendarTester {
 
         if (decision == 'D') {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMM d YYYY");
-
             while (decision != 'G') {
                 System.out.println(" " + formatter.format(flexDay));
                 if (myCal.getEvents(flexDay)!=null) {
@@ -177,37 +188,59 @@ public class MyCalendarTester {
 //            {
 //                Event event = iter.next();
 //            }
-
-
-
         } else if (decision == 'M') {
-            printCalendar(cal);
-//            if (myCal.getEvents(cal) == null) {
-//                for (MyCalendar myCalendar : myCal) {
-//                    // put {} around those numbers in a month that has events
-//                }
-//            }
-
-            System.out.println("[P]revious or [N]ext or [G]o back to main menu ?");
+            // the event in October does not show up in the calendar
+            while (decision != 'G') {
+                printCalendar(flexDay);
+                System.out.println();
+                System.out.println("[P]revious or [N]ext or [G]o back to main menu ?");
+                decision = sc.next(".").charAt(0);
+                if (decision == 'P') {
+                    flexDay = flexDay.minusMonths(1);
+                } else if (decision == 'N') {
+                    flexDay = flexDay.plusMonths(1);
+                }
+            }
         }
     }
 
     private static void create() {
-        //
+        System.out.print("Enter title: ");
+        String name = sc.next();
+        System.out.print("Enter date MM/DD/YYYY: ");
+        String date = sc.next();
+        LocalDate day = LocalDate.parse(date, fullYearFormatter);
+        System.out.print("Enter start time: ");
+        String start = sc.next();
+        System.out.print("Enter end time: ");
+        String end = sc.next();
+        TimeInterval timeInterval = new TimeInterval(LocalTime.parse(start, DateTimeFormatter.ISO_LOCAL_TIME),
+                LocalTime.parse(end, DateTimeFormatter.ISO_LOCAL_TIME));
+        if (myCal.getEvents(day) == null) {
+            Event event = new Event(name, day, timeInterval);
+            myCal.add(event);
+        } else {
+            // Check if the time interval is conflict!
+        }
     }
 
     private static void goTo() {
         //With this option, the user is asked to enter a date in the form of MM/DD/YYYY
         // and then the calendar displays the Day view of the requested date including
         // an event scheduled on that day in the order of starting time.
-        System.out.println("Enter the date [dd/mm/yyyy]");
-
+        System.out.print("Enter the date [mm/dd/yyyy]: ");
+        String date = sc.next();
+        LocalDate day = LocalDate.parse(date, fullYearFormatter);
+        for (Event event : myCal.getEvents(day)) {
+            System.out.println(event.getName() + ": " + event.getTime());
+        }
     }
 
     private static void eventList() {
         //The user can browse scheduled events. The calendar displays all the events
         // scheduled in the calendar in the order of starting date and starting time.
-        // An example presentation of events is as follows: (The format of event strings does not have to be exactly like this.)
+        // An example presentation of events is as follows:
+        // (The format of event strings does not have to be exactly like this.)
 
     }
 
@@ -216,25 +249,21 @@ public class MyCalendarTester {
         // The specific event will be deleted.
         //[A]ll: the user specifies a date and all the events scheduled on the date will be deleted.
         System.out.println("[S]elected or [A]ll?");
-        Scanner inputView = new Scanner(System.in);
-        char decision = inputView.next(".").charAt(0);
+        char decision = sc.next(".").charAt(0);
         if (decision == 'S') {
             System.out.println("Enter the date [mm/dd/yyyy]");
-            Scanner inputDay = new Scanner(System.in);
-            String dayInput = inputDay.nextLine();
+            String dayInput = sc.nextLine();
             // view by Day here! List all the events of that day here!!!!!!!!!!!!!!
             LocalDate day = LocalDate.parse(dayInput, dateTimeFormatter);
             System.out.print("Enter the name of the event to delete:");
-            Scanner inputName = new Scanner(System.in);
-            String nameInput = inputName.next();
+            String nameInput = sc.next();
             // should delete the event named and show the remain one
             System.out.println(dayInput);
             // show the remaining event here!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         } else if (decision == 'A') {
             System.out.println("Enter the date [mm/dd/yyyy]");
-            Scanner inputDay = new Scanner(System.in);
-            String dayInput = inputDay.nextLine();
+            String dayInput = sc.nextLine();
             LocalDate day = LocalDate.parse(dayInput, dateTimeFormatter);
             // delete all the event here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             System.out.println("All the events on " + dayInput + " has been deleted.");

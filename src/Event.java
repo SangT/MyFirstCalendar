@@ -46,4 +46,9 @@ public class Event implements Comparable<Event> {
         // return 0 if equal
         // returns 1 if we are greater than o
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

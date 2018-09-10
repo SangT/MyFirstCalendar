@@ -27,6 +27,20 @@ public class MyCalendar {
         return eventsOrder.get(day);
     }
 
+    public boolean hasEvent(LocalDate day) {
+        TreeSet<Event> s = eventsOrder.get(day);
+        if (s == null)
+            return false;
+        else if (s.isEmpty())
+            return false;
+        // s = { my birthday, kevin's party }
+        // user removes my birthday
+        // s = { kevin's party }
+        // user removes party
+        // s = {  }
+        return true;
+    }
+
     // myCalendar.haveEventsOnDay(March 3rd) // return boolean
 
     /*

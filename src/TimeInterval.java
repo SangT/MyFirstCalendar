@@ -40,15 +40,15 @@ public class TimeInterval implements Comparable<TimeInterval> {
      * @param other The other TimeInterval to check.
      * @return true if either event conflicts.
      */
-    private boolean conflict(TimeInterval other) {
+    public boolean conflict(TimeInterval other) {
         // a ends before b
         // a starts after b ends
 
         if (end.isBefore(other.start) || start.isAfter(other.end)) {
             System.out.println("CONFLICT!");
-            return false;
-        } else {
             return true;
+        } else {
+            return false;
         }
     }
 
