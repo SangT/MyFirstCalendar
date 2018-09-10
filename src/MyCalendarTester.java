@@ -7,6 +7,7 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -19,6 +20,7 @@ public class MyCalendarTester {
     static LocalDate cal = LocalDate.now();
     static String[] options = {"[L]oad", "[V]iew by", "[C]reate", "[G]o to", "[E]vent list", "[D]elete", "[Q]uit"};
     static MyCalendar myCal = new MyCalendar();
+    static Scanner sc = new Scanner(System.in);
 
     static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yy");
 //    static final DateTimeFormatter multipleDays = DateTimeFormatter.ofPattern("EEE");
@@ -30,37 +32,19 @@ public class MyCalendarTester {
         // After the function of an option is done
         // the main menu is displayed again for the user to choose the next option.
 
-        Scanner sc = new Scanner(System.in);
         boolean check = true;
         while (check) {
             printMenu();
             char input = sc.next(".").charAt(0);
             switch (input) {
-                case 'L':
-                    load();
-                    break;
-                case 'V':
-                    viewBy();
-                    break;
-                case 'C':
-                    create();
-                    break;
-                case 'G':
-                    goTo();
-                    break;
-                case 'E':
-                    eventList();
-                    break;
-                case 'D':
-                    delete();
-                    break;
-                case 'Q':
-                    check = false;
-                    quit();
-                    break;
-                default:
-                    System.out.println("Please input the correct option!");
-                    break;
+                case 'L': load();break;
+                case 'V': viewBy();break;
+                case 'C': create();break;
+                case 'G': goTo();break;
+                case 'E': eventList();break;
+                case 'D': delete();break;
+                case 'Q': check = false;quit();break;
+                default: System.out.println("Please input the correct option!");break;
             }
         }
     }
@@ -166,13 +150,35 @@ public class MyCalendarTester {
 
     private static void viewBy() {
         System.out.println("[D]ay view or [M]onth view ?");
-        Scanner inputView = new Scanner(System.in);
-        char decision = inputView.next(".").charAt(0);
+        char decision = sc.next(".").charAt(0);
+
+        LocalDate flexDay = cal;
+
         if (decision == 'D') {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, MMM d YYYY");
-            System.out.println(" " + formatter.format(cal));
-            System.out.println(myCal.getEvents(cal)); // Need to print in the form: CS151 Lecture : 10:30 - 11:45
-            System.out.println("[P]revious or [N]ext or [G]o back to main menu ?");
+
+            while (decision != 'G') {
+                System.out.println(" " + formatter.format(flexDay));
+                if (myCal.getEvents(flexDay)!=null) {
+                    for (Event event : myCal.getEvents(flexDay)) {
+                        System.out.println(event.getName() + " : " + event.getTime());
+                    }
+                }
+                System.out.println("[P]revious or [N]ext or [G]o back to main menu ?");
+                decision = sc.next(".").charAt(0);
+                if (decision == 'P') {
+                    flexDay = flexDay.minusDays(1);
+                } else if (decision == 'N') {
+                    flexDay = flexDay.plusDays(1);
+                }
+            }
+//            Iterator<Event> iter = myCal.getEvents(cal).iterator();
+//            while (iter.hasNext())
+//            {
+//                Event event = iter.next();
+//            }
+
+
 
         } else if (decision == 'M') {
             printCalendar(cal);
@@ -194,6 +200,8 @@ public class MyCalendarTester {
         //With this option, the user is asked to enter a date in the form of MM/DD/YYYY
         // and then the calendar displays the Day view of the requested date including
         // an event scheduled on that day in the order of starting time.
+        System.out.println("Enter the date [dd/mm/yyyy]");
+
     }
 
     private static void eventList() {

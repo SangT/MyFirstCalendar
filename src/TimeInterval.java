@@ -53,6 +53,11 @@ public class TimeInterval implements Comparable<TimeInterval> {
     }
 
     @Override
+    public String toString() {
+        return start + " - " + end;
+    }
+
+    @Override
     public int compareTo(TimeInterval o) {
         return start.compareTo(o.start);
     }
